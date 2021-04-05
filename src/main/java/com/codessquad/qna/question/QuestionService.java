@@ -3,11 +3,11 @@ package com.codessquad.qna.question;
 import com.codessquad.qna.answer.AnswerService;
 import com.codessquad.qna.exception.ResourceNotFoundException;
 import com.codessquad.qna.user.UserDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -19,12 +19,11 @@ public class QuestionService {
         this.answerService = answerService;
     }
 
-    public List<QuestionDTO> readAll() {
-        List<Question> questions = questionRepository.findAllByDeletedFalse();
+    public Page<QuestionDTO> readAll(int pageNumber) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, 15, Sort.by("createDateTime", "id"));
+        Page<Question> questions = questionRepository.findAllByDeletedFalse(pageRequest);
 
-        return questions.stream()
-                .map(question -> QuestionDTO.of(question, answerService.countBy(question)))
-                .collect(Collectors.toList());
+        return questions.map(question -> QuestionDTO.of(question, answerService.countBy(question)));
     }
 
     private Question readExistedQuestion(Long id) {

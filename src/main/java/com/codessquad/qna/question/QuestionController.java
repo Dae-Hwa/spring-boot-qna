@@ -1,6 +1,7 @@
 package com.codessquad.qna.question;
 
 import com.codessquad.qna.utils.SessionUtils;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,8 +18,8 @@ public class QuestionController {
     }
 
     @GetMapping
-    public ModelAndView readAll() {
-        return new ModelAndView("/qna/list", "questions", questionService.readAll());
+    public ModelAndView readAll(@RequestParam(defaultValue = "1") Integer pageNumber) {
+        return new ModelAndView("/qna/list", "questions", questionService.readAll(pageNumber.intValue()));
     }
 
     @PostMapping
